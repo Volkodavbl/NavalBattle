@@ -11,5 +11,7 @@
     {
         public string Login { get; init; } = login;
         public UserType UserType { get; set; } = UserType.Inactive;
+
+        public Field? Field { get; set; } = null;
     }
 }
