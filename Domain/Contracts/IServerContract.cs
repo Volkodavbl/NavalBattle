@@ -13,7 +13,7 @@ namespace Domain.Contracts
 		public Task CheckHit(Point point);
 		public Task ClientReady();
 		public Task GetGameState();
-		public Task ShipPlacement();
+		public Task RandomShipPlacement();
 		public Task ChangeUserType(UserType newUserType);
 	}
 }
