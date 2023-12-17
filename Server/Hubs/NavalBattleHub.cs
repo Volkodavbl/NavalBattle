@@ -160,7 +160,6 @@ namespace Server.Hubs
 			await Clients.Caller.SendAsync("RoomCreated", room);
 		}
 
-		//TODO
 		//Получение состояния игры на данный момент
 		public async Task GetGameState()
 		{
@@ -178,9 +177,7 @@ namespace Server.Hubs
 				return;
 			}
 
-			var filteredRoom = user.UserType == UserType.Player ? room.FilterByUser(user) : room;
-
-			await Clients.Caller.SendAsync("GameState", filteredRoom);
+			await Clients.Caller.SendAsync("GameState", room);
 		}
 
 		//Получение списка всех комнат
