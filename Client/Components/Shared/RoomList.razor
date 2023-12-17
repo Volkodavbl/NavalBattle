@@ -25,13 +25,13 @@
 </div>
 
 @code {
-    public List<Room> _rooms = null;
+    // protected override void OnInitialized() => GetRoomList();
 
-    protected override void OnInitialized() => GetRoomList();
+    public List<Room> _rooms = new();
 
-    void GetRoomList()
-    {
-        hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
-        hubConnection.SendAsync("GetRoomList");
-    }
+    // void GetRoomList()
+    // {
+    //     // hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
+    //     // hubConnection.SendAsync("GetRoomList");
+    // }
 }

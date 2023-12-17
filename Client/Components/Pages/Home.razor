@@ -1,5 +1,8 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
 @using Domain.Entities
+@using Client.Components.Shared
+@rendermode InteractiveServer
+
 @page "/"
 @inject HubConnection hubConnection;
 
@@ -7,32 +10,23 @@
 
 <h1>Играть в NavalBattle</h1>
 
-<InputText @bind-Value="roomRegister!.Login"></InputText>
+<label for="login">Логин: </label>
+<InputText id="login" @bind-Value="roomRegister!.Login"></InputText>
 <button class="btn btn-primary" @onclick="Login">Войти</button>
-
 
 
 @if (isAuthorized)
 {
-    
-    
+    <RoomList></RoomList>
+@*     <EditForm Model="@roomRegister" OnValidSubmit="@CreateRoom">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <label for="roomName">Название комнаты: </label>
+        <InputText id="roomName" @bind-Value="roomRegister!.RoomName"></InputText>
+        <button class="btn btn-primary" type="submit">Создать комнату</button>
+    </EditForm> *@
 }
 
-<EditForm Model="@roomRegister" @OnValidSubmit="@CreateRoom">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <InputText @bind-Value="roomRegister!.RoomName"></InputText>
-</EditForm>
-@* <form method="post">
-    <label for="login">Логин: </label>
-    <input id="login" @bind-value="login"/>
-
-    <label for="roomName">Имя комнаты: </label>
-    <input @bind-value="roomName" />
-</form>
-<button class="btn btn-primary" @onclick="CreateRoom">Создать комнату</button>
- *@
 
 @code {
     public bool isAuthorized = false;
@@ -50,13 +44,14 @@
 
     protected override void OnInitialized() => roomRegister ??= new();
 
-    void CreateRoom()
+    private void CreateRoom()
     {
-        hubConnection.SendAsync("CreateRoom", new User(roomRegister.Login), roomRegister.RoomName);
+        // hubConnection.SendAsync("CreateRoom", new User(roomRegister!.Login!), roomRegister.RoomName);
     }
 
-    void Login()
-    {   
-        
+    private void Login()
+    {
+        // hubConnection.SendAsync("Login", new User(roomRegister!.Login!));
+        isAuthorized = true;
     }
 }
