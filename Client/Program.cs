@@ -25,7 +25,11 @@ HubConnection connection = new HubConnectionBuilder()
     }).AddNewtonsoftJsonProtocol(opts =>
         opts.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.Auto)
     .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10)])
-    .ConfigureLogging((logging) => { logging.AddConsole(); logging.SetMinimumLevel(LogLevel.Debug); })
+    .ConfigureLogging((logging) =>
+    {
+        logging.AddConsole();
+        logging.SetMinimumLevel(LogLevel.Debug);
+    })
     .Build();
 
 builder.Services.AddSingleton<HubConnection>(connection);
