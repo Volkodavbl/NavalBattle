@@ -11,7 +11,7 @@ namespace Server.Hubs
 		private static List<User> users = [];
 		private static Dictionary<string, User> connectionId_user = [];
 
-		//Смена типа пользователя на новый
+		// Смена типа пользователя на новый
 		public async Task ChangeUserType(UserType newUserType)
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -32,7 +32,7 @@ namespace Server.Hubs
             await Clients.Group(room.Id.ToString()).ShowRoom(room, user);
 		}
 
-		//Добавление нового корабля на игровую площадку до начала игры
+		// Добавление нового корабля на игровую площадку до начала игры
 		public async Task AddShip(Point start, Point end)
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -67,7 +67,7 @@ namespace Server.Hubs
             await Clients.Caller.ShowRoom(room, user);
 		}
 
-		//Проверка на попадание ко кораблю хода игрока
+		// Проверка на попадание ко кораблю хода игрока
 		public async Task CheckHit(Point point)
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -109,7 +109,7 @@ namespace Server.Hubs
             await Clients.Caller.ShowRoom(room, user);
 		}
 
-		//Игрок подтверждает готовность для старта игры
+		// Игрок подтверждает готовность для старта игры
 		public async Task ClientReady()
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -131,7 +131,7 @@ namespace Server.Hubs
             await Clients.Caller.ShowRoom(room, user);
 		}
 
-		//Создание новой комнаты, пользователь автоматически ---ПРИСОЕДИНЯЕТСЯ--- к созданной комнате
+		// Создание новой комнаты, пользователь автоматически ---ПРИСОЕДИНЯЕТСЯ--- к созданной комнате
 		public async Task CreateRoom(string roomName, int fieldSize = 10, int shipCount = 10)
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -150,7 +150,7 @@ namespace Server.Hubs
             await Clients.Caller.ShowRoom(room, user);
 		}
 
-		//Получение состояния игры на данный момент
+		// Получение состояния игры на данный момент
 		public async Task GetGameState()
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -170,7 +170,7 @@ namespace Server.Hubs
             await Clients.Caller.ShowRoom(room, user);
 		}
 
-		//Получение списка всех комнат
+		// Получение списка всех комнат
 		public async Task GetRoomList()
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -182,10 +182,10 @@ namespace Server.Hubs
 
 			var filteredRooms = rooms.ToList();
 
-            await Clients.All.ShowRoomList(rooms);
+            await Clients.Caller.ShowRoomList(rooms);
 		}
 
-		//присоединение пользователя к комнате, если уже имеется два игрока со статусом Игрок, то пользователь становится наблюдателем
+		// Присоединение пользователя к комнате, если уже имеется два игрока со статусом Игрок, то пользователь становится наблюдателем
 		public async Task JoinRoom(int roomId)
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -217,7 +217,7 @@ namespace Server.Hubs
 			await Clients.Caller.ShowRoom(room, user);
 		}
 
-		//Логин нового юзера
+		// Логин нового юзера
 		public async Task LoginUser(string login)
 		{
 			var notUnique = users.Any(x => x.Login == login);
@@ -239,7 +239,7 @@ namespace Server.Hubs
 			await Clients.Caller.ShowRoomList(rooms);
 		}
 
-		//Случайная расстановка всех кораблей. Учитывает, что игрок поместил уже какие-то корабли на поле, стирает их, ставит все корабли заново
+		// Случайная расстановка всех кораблей. Учитывает, что игрок поместил уже какие-то корабли на поле, стирает их, ставит все корабли заново
 		public async Task RandomShipPlacement()
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
@@ -346,13 +346,13 @@ namespace Server.Hubs
 			return;
 		}
 
-		//Получение объекта команты по юзеру
+		// Получение объекта команты по юзеру
 		private Room GetRoomByUser(User user)
 		{
-			return rooms.FirstOrDefault(room => room.Users.Contains(user));
+			return rooms.First(room => room.Users.Contains(user));
 		}
 
-		//Получение юзера по его строке подключения
+		// Получение юзера по его строке подключения
 		private User GetUserByConnectionId(string connectionId)
 		{
 			return users.First(user => user.Login == (connectionId_user[connectionId] as User).Login);

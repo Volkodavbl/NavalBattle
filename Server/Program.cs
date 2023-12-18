@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Server.Hubs;
 
-var builder = WebApplication.CreateBuilder(args);  
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR().AddNewtonsoftJsonProtocol(opts =>
         opts.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.Auto);
