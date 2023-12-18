@@ -1,0 +1,38 @@
+﻿@page "/room"
+@using Domain.Entities
+@using Microsoft.AspNetCore.SignalR.Client
+@inject HubConnection hubConnection
+<h3>Room</h3>
+
+<Grid Ships="@testRoom.Users.First().Field.Ships" Events="@testRoom.Users.First().Field.Events"/>
+
+@code {
+
+    public Domain.Entities.Room MainRoom { get; set; }     
+    public User? MainUser { get; set; }      
+    public User? OpponentUser { get; set; }    
+
+    private Domain.Entities.Room testRoom;
+
+    protected override void OnInitialized()
+    {
+        // Создаем тестовые данные
+        var Ship1 = new Ship(new Point(0, 0), new Point(0, 2));
+        var Ship2 = new Ship(new Point(3, 3), new Point(5, 3));
+
+        var testField = new Field();
+        testField.Ships.Add(Ship1);
+        testField.Ships.Add(Ship2);
+
+        testField.Events.Add(new Point(0, 0)); // damage
+        testField.Events.Add(new Point(3, 3)); // damage
+        testField.Events.Add(new Point(7, 7)); // miss
+
+        var testUser = new User("Player1");
+        testUser.UserType = UserType.Player;
+        testUser.Field = testField;
+
+        testRoom = new Domain.Entities.Room(1, "TestRoom", 10, 2);
+        testRoom.Users.Add(testUser);
+    }
+}

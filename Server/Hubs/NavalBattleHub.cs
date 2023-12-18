@@ -1,4 +1,4 @@
-﻿using Domain.Contracts;
+using Domain.Contracts;
 using Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections;

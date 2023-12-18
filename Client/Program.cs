@@ -1,6 +1,7 @@
 using Client.Components;
 using Client.Services;
 using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,10 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-var app = builder.Build();
+builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 
 HubConnection connection = new HubConnectionBuilder()
-    .WithUrl(new Uri("https://127.0.0.1:7155/NavalBattle"), (opts) =>
+    .WithUrl(new Uri(builder.Configuration.GetSection("Uri") + "/NavalBattle"), (opts) =>
     {
         opts.HttpMessageHandlerFactory = (message) =>
         {
@@ -21,15 +22,23 @@ HubConnection connection = new HubConnectionBuilder()
                     (sender, certificate, chain, sslPolicyErrors) => { return true; };
             return message;
         };
-    })
+    }).AddNewtonsoftJsonProtocol(opts =>
+        opts.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.Auto)
     .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10)])
+    .ConfigureLogging((logging) =>
+    {
+        logging.AddConsole();
+        logging.SetMinimumLevel(LogLevel.Debug);
+    })
     .Build();
+
+builder.Services.AddSingleton<HubConnection>(connection);
+builder.Services.AddSingleton<ClientService>();
+var app = builder.Build();
 
 await connection.StartAsync();
 
 var client = new ClientService();
-
-connection.On("TestClientMethod", client.TestClientMethod);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

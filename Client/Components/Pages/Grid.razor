@@ -1,0 +1,97 @@
+﻿@using Client.Extensions
+@using Domain.Entities
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inherits ComponentBase
+@inject IJSRuntime JsRuntime
+@inject HubConnection hubConnection
+@rendermode InteractiveServer
+
+<div class="grid-container">
+    <h4>Ship Grid:</h4>
+    <table class="grid">
+        @for (int i = 0; i < 10; i++)
+        {
+            <tr class="grid-row">
+                @for (int j = 0; j < 10; j++)
+                {
+                    var currentPoint = new Point(i, j);
+
+                    var isSelected = selectedPoint != null && selectedPoint.X == currentPoint.X && selectedPoint.Y == currentPoint.Y;
+
+                    <td class="grid-cell @(isSelected ? "selected-cell" : "")"
+                        @onclick="() => SelectCell(currentPoint)">
+                        @if (Events.Any((e) => e.X == currentPoint.X && e.Y == currentPoint.Y))
+                        {
+                            if (currentPoint.IsShip(Ships) == true)
+                            {
+                                <div class="damage-symbol">&#x274C</div>
+                            }
+                            else
+                            {
+                                <div class="miss-symbol">&#x2732</div>
+                            }
+                        }
+                        else
+                        {
+                            if (currentPoint.IsShip(Ships) == true)
+                            {
+                                <div class="ship-symbol">&#x1F6A2</div>
+                            }
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+    <button @onclick="Fire">Fire</button>
+</div>
+
+@code {
+    [Parameter]
+    public List<Ship>? Ships { get; set; }
+
+    [Parameter]
+    public List<Point>? Events { get; set; }
+
+    private Point? selectedPoint;
+
+    private void SelectCell(Point point)
+    {
+        selectedPoint = point;
+        StateHasChanged();
+    }
+
+    private async Task Fire()
+    {
+        if (selectedPoint != null)
+        {
+            await hubConnection.SendAsync("CheckHit", selectedPoint);
+
+            Domain.Entities.Room newRoom;
+
+            var Ship1 = new Ship(new Point(0, 0), new Point(0, 2));
+            var Ship2 = new Ship(new Point(7, 7), new Point(7, 9));
+
+            var testField = new Field();
+            testField.Ships.Add(Ship1);
+            testField.Ships.Add(Ship2);
+
+            var testUser = new User("Player1");
+            testUser.UserType = UserType.Player;
+            testUser.Field = testField;
+
+            newRoom = new Domain.Entities.Room(1, "TestRoom", 10, 2);
+            newRoom.Users.Add(testUser);
+
+            // Обновление данных компонента
+            Events = newRoom.Users.First().Field.Events;
+
+            StateHasChanged();
+        }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Выберите поле для огня!");
+        }
+    }
+}
