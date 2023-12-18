@@ -18,10 +18,5 @@ namespace Client.Services
         {
             throw new NotImplementedException();
         }
-
-        public string TestClientMethod()
-        {
-            return "TestClient";
-        }
     }
 }
