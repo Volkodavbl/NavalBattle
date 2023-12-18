@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
+var app = builder.Build();
 
 HubConnection connection = new HubConnectionBuilder()
     .WithUrl(new Uri("https://127.0.0.1:7155/NavalBattle"), (opts) =>
@@ -25,16 +25,11 @@ HubConnection connection = new HubConnectionBuilder()
     .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10)])
     .Build();
 
-
-builder.Services.AddSingleton<HubConnection>(connection);
-builder.Services.AddSingleton<ClientService>();
-var app = builder.Build();
-
-
-
 await connection.StartAsync();
 
 var client = new ClientService();
+
+connection.On("TestClientMethod", client.TestClientMethod);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
