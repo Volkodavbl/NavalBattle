@@ -28,7 +28,6 @@ namespace Client.Services
         {
             RoomListChanged.Invoke(rooms);
             return Task.CompletedTask;
-
         }
     }
 }

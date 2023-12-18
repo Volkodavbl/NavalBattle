@@ -7,7 +7,7 @@
 
 <h3>RoomList</h3>
 <div id="roomList">
-    @if (_rooms.Count() != 0)
+    @if (Rooms is not null)
     {
         <table>
             <tr>
@@ -15,7 +15,7 @@
                 <th>Имя</th>
                 <th>Количество участников</th>
             </tr>
-            @foreach (var room in _rooms)
+            @foreach (var room in Rooms)
             {
                 <tr>
                     <td>@room.Id</td>
@@ -30,23 +30,27 @@
 </div>
 
 @code {
+    [Parameter]
+    public List<Room> Rooms { get; set; }
 
     private void GetRoomList(List<Room> rooms)
     {
-        _rooms = rooms; 
+        Rooms = rooms; 
         InvokeAsync(StateHasChanged);
     }
 
     protected override void OnInitialized()
     {
         clientService.RoomListChanged += (rooms) => GetRoomList(rooms);
+        hubConnection.On<List<Domain.Entities.Room>>("ShowRoomList", clientService.ShowRoomList);
+        hubConnection.SendAsync("GetRoomList");
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)    
+        if (firstRender)
         {
-            hubConnection.On<List<Domain.Entities.Room>>("ShowRoomList", clientService.ShowRoomList);
+
         }
     }
 
@@ -55,5 +59,4 @@
         clientService.RoomListChanged -= (rooms) => GetRoomList(rooms);
     }
 
-    public List<Room> _rooms = new();
 }

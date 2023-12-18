@@ -1,6 +1,7 @@
 using Client.Components;
 using Client.Services;
 using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,18 +12,20 @@ builder.Services.AddRazorComponents()
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 
 HubConnection connection = new HubConnectionBuilder()
-    .WithUrl(new Uri("https://127.0.0.1:7155/NavalBattle"), (opts) =>
+    .WithUrl(new Uri(builder.Configuration.GetSection("Uri") + "/NavalBattle"), (opts) =>
     {
         opts.HttpMessageHandlerFactory = (message) =>
         {
             if (message is HttpClientHandler clientHandler)
-                // always verify the SSL certificate
+                // always verify the SSL certificate    
                 clientHandler.ServerCertificateCustomValidationCallback +=
                     (sender, certificate, chain, sslPolicyErrors) => { return true; };
             return message;
         };
-    })
+    }).AddNewtonsoftJsonProtocol(opts =>
+        opts.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.Auto)
     .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10)])
+    .ConfigureLogging((logging) => { logging.AddConsole(); logging.SetMinimumLevel(LogLevel.Debug); })
     .Build();
 
 

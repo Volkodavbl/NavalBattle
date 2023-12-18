@@ -51,7 +51,7 @@
         isAuthorized = false;
         await InvokeAsync(StateHasChanged);
         clientService.ErrorOcured -= ErrorMethod;
-        await JsRuntime.InvokeVoidAsync("alert", message);
+        // await JsRuntime.InvokeVoidAsync("alert", message);
     }
 
     protected override void OnInitialized()
@@ -75,8 +75,8 @@
 
     private void CreateRoom()
     {        
-        hubConnection.SendAsync("CreateRoom", roomRegister!.RoomName);
-        Navigation.NavigateTo("/room");
+        hubConnection.SendAsync("CreateRoom", roomRegister!.RoomName, 10, 10);
+        // Navigation.NavigateTo("/room");
     }
 
     private void Login()
