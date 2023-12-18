@@ -7,7 +7,6 @@ namespace Client.Services
 {
     public class ClientService : IClientContract
     {
-
         public event Action<List<Room>> RoomListChanged;
         public event Action<Room, User> RoomChanged;
         public event Action<string> ErrorOcured;
@@ -23,7 +22,6 @@ namespace Client.Services
             return Task.CompletedTask;
 
         }
-
         public Task ShowRoomList(List<Room> rooms)
         {
             RoomListChanged.Invoke(rooms);

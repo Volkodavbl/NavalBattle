@@ -28,7 +28,6 @@ HubConnection connection = new HubConnectionBuilder()
     .ConfigureLogging((logging) => { logging.AddConsole(); logging.SetMinimumLevel(LogLevel.Debug); })
     .Build();
 
-
 builder.Services.AddSingleton<HubConnection>(connection);
 builder.Services.AddSingleton<ClientService>();
 var app = builder.Build();

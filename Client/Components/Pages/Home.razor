@@ -18,7 +18,6 @@
 <InputText id="login" @bind-Value="roomRegister!.Login"></InputText>
 <button class="btn btn-primary" @onclick="Login">Войти</button>
 
-
 @if (isAuthorized)
 {
     <RoomList></RoomList>
@@ -30,7 +29,6 @@
         <button class="btn btn-primary" type="submit">Создать комнату</button>
     </EditForm>
 }
-
 
 @code {
     public bool isAuthorized = false;
@@ -84,5 +82,4 @@
         isAuthorized = true;
         hubConnection.SendAsync("LoginUser", roomRegister!.Login!);
     }
-
 }
