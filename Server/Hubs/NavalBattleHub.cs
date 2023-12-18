@@ -9,7 +9,7 @@ namespace Server.Hubs
 	{
 		private static List<Room> rooms = [];
 		private static List<User> users = [];
-		private static Hashtable connectionId_user = [];
+		private static Dictionary<string, User> connectionId_user = [];
 
 		//Смена типа пользователя на новый
 		public async Task ChangeUserType(UserType newUserType)
@@ -140,8 +140,9 @@ namespace Server.Hubs
                 await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
+			var new_id = rooms.Select(x => x.Id).DefaultIfEmpty().Max() + 1;
 
-			var room = new Room(rooms.Select(x => x.Id).Max() + 1,roomName, fieldSize, shipCount);
+            var room = new Room(new_id ,roomName, fieldSize, shipCount);
 			rooms.Add(room);
 
 			await JoinRoom(room.Id);
@@ -181,7 +182,7 @@ namespace Server.Hubs
 
 			var filteredRooms = rooms.ToList();
 
-            await Clients.Caller.ShowRoomList(filteredRooms);
+            await Clients.All.ShowRoomList(rooms);
 		}
 
 		//присоединение пользователя к комнате, если уже имеется два игрока со статусом Игрок, то пользователь становится наблюдателем
@@ -228,7 +229,12 @@ namespace Server.Hubs
 			}
 			var user = new User(login);
 			users.Add(user);
+			if (connectionId_user.ContainsKey(Context.ConnectionId))
+			{
+				connectionId_user.Remove(Context.ConnectionId);
+			}
 			connectionId_user.Add(Context.ConnectionId, user);
+
 
 			await Clients.Caller.ShowRoomList(rooms);
 		}
@@ -349,7 +355,7 @@ namespace Server.Hubs
 		//Получение юзера по его строке подключения
 		private User GetUserByConnectionId(string connectionId)
 		{
-			return users.FirstOrDefault(user => user.Login == connectionId_user[connectionId].ToString());
+			return users.First(user => user.Login == (connectionId_user[connectionId] as User).Login);
 		}
 	}
 }
