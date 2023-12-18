@@ -1,0 +1,57 @@
+﻿<!-- GridComponent.razor -->
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime
+
+<div class="grid">
+    <table>
+        <tbody>
+            @for (int i = 0; i < Rows; i++)
+            {
+                <tr>
+                    @for (int j = 0; j < Cols; j++)
+                    {
+                        int currentRow = i;
+                        int currentCol = j;
+
+                        <td>
+                            <CellComponent @onclick="() => CellClick(currentRow, currentCol)"
+                                           IsSelected="@((currentRow, currentCol) == (selectedRow, selectedCol))" />
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button @onclick="Fire" class="btn btn-outline-danger">Fire</button>
+</div>
+
+@code {
+    [Parameter]
+    public int Rows { get; set; }
+
+    [Parameter]
+    public int Cols { get; set; }
+
+    private int selectedRow = -1;
+    private int selectedCol = -1;
+
+    private void CellClick(int row, int col)
+    {
+        ClearSelection();
+        selectedRow = row;
+        selectedCol = col;
+        StateHasChanged();
+    }
+
+    private void ClearSelection()
+    {
+        selectedRow = -1;
+        selectedCol = -1;
+    }
+
+    private void Fire()
+    {
+        JsRuntime.InvokeVoidAsync("alert", $"BAM!!!\n{selectedRow}, {selectedCol}");
+    }
+}
+

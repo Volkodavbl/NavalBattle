@@ -1,0 +1,17 @@
+﻿.grid {
+    margin-top: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+td {
+    padding: 0;
+    border: 1px solid black;
+}
+
+button {
+    margin-top: 10px;
+}

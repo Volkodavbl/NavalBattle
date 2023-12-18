@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Components\Shared\GridComponent.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\Shared\GridComponent.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
   </ItemGroup>
 

@@ -1,0 +1,44 @@
+﻿<!-- CellComponent.razor -->
+
+@rendermode InteractiveServer
+<div class="cell @(IsSelected ? "selected" : "")" @onmouseover="ShowCross" @onmouseout="HideCross" @onclick="ToggleSelection">
+    @if (showCross)
+    {
+        <div class="cross">
+            X
+        </div>
+    }
+
+
+</div>
+
+@code {
+    [Parameter]
+    public bool IsSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    private bool showCross = false;
+
+    private void ShowCross()
+    {
+        if (!IsSelected)
+        {
+            showCross = true;
+        }
+    }
+
+    private void HideCross()
+    {
+        if (!IsSelected)
+        {
+            showCross = false;
+        }
+    }
+
+    private async Task ToggleSelection(MouseEventArgs args)
+    {
+        await OnClick.InvokeAsync(args);
+    }
+}
