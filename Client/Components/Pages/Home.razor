@@ -76,7 +76,7 @@
 
     private void CreateRoom()
     {
-        hubConnection.On<Domain.Entities.Room>("ShowRoom", clientService.ShowRoom);
+        hubConnection.On<Domain.Entities.Room, User>("ShowRoom", clientService.ShowRoom);
         hubConnection.SendAsync("CreateRoom", roomRegister!.RoomName);
         Navigation.NavigateTo("/room");
     }

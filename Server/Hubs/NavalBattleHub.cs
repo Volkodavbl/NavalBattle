@@ -29,7 +29,7 @@ namespace Server.Hubs
 
 			user.UserType = newUserType;
 
-            await Clients.Group(room.Id.ToString()).ShowRoom(room);
+            await Clients.Group(room.Id.ToString()).ShowRoom(room, user);
 		}
 
 		//Добавление нового корабля на игровую площадку до начала игры
@@ -64,7 +64,7 @@ namespace Server.Hubs
 			var ship = new Ship(start, end);
 			field.Ships.Add(ship);
 
-            await Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room, user);
 		}
 
 		//Проверка на попадание ко кораблю хода игрока
@@ -106,7 +106,7 @@ namespace Server.Hubs
 
 			// узнаем, попали ли мы в кораблик или нет
 			var hit = opponentField.Ships.Any(x => x.CheckHit(point));
-            await Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room, user);
 		}
 
 		//Игрок подтверждает готовность для старта игры
@@ -128,7 +128,7 @@ namespace Server.Hubs
 
 			await ChangeUserType(UserType.Player);
 
-            await Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room, user);
 		}
 
 		//Создание новой комнаты, пользователь автоматически ---ПРИСОЕДИНЯЕТСЯ--- к созданной комнате
@@ -146,7 +146,7 @@ namespace Server.Hubs
 
 			await JoinRoom(room.Id);
 
-            await Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room, user);
 		}
 
 		//Получение состояния игры на данный момент
@@ -166,7 +166,7 @@ namespace Server.Hubs
 				return;
 			}
 
-            await Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room, user);
 		}
 
 		//Получение списка всех комнат
@@ -213,7 +213,7 @@ namespace Server.Hubs
 			
 			room.Users.Add(user);
 
-			await Clients.Caller.ShowRoom(room);
+			await Clients.Caller.ShowRoom(room, user);
 		}
 
 		//Логин нового юзера
@@ -336,7 +336,7 @@ namespace Server.Hubs
 				}
 			}
 
-            await Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room, user);
 			return;
 		}
 

@@ -6,6 +6,6 @@ namespace Domain.Contracts
     {
         public Task Error(string message);
         public Task ShowRoomList(List<Room> rooms);
-        public Task ShowRoom(Room room);
+        public Task ShowRoom(Room room, User user);
     }
 }

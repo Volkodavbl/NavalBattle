@@ -9,7 +9,7 @@ namespace Client.Services
     {
 
         public event Action<List<Room>> RoomListChanged;
-        public event Action<Room> RoomChanged;
+        public event Action<Room, User> RoomChanged;
         public event Action<string> ErrorOcured;
         public Task Error(string message)
         {
@@ -17,9 +17,9 @@ namespace Client.Services
             return Task.CompletedTask;
         }
 
-        public Task ShowRoom(Room room)
+        public Task ShowRoom(Room room, User user)
         {
-            RoomChanged.Invoke(room);
+            RoomChanged.Invoke(room, user);
             return Task.CompletedTask;
 
         }
