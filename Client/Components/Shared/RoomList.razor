@@ -31,18 +31,28 @@
 
 @code {
 
+    private void GetRoomList(List<Room> rooms)
+    {
+        _rooms = rooms; 
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized()
+    {
+        clientService.RoomListChanged += (rooms) => GetRoomList(rooms);
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender)    
         {
-            clientService.RoomListChanged += (rooms) => { _rooms = rooms; InvokeAsync(StateHasChanged); };
-            hubConnection.On<Domain.Entities.Room, User>("ShowRoom", clientService.ShowRoom);
+            hubConnection.On<List<Domain.Entities.Room>>("ShowRoomList", clientService.ShowRoomList);
         }
     }
 
     public void Dispose()
     {
-        clientService.RoomListChanged += (rooms) => { _rooms = rooms; InvokeAsync(StateHasChanged); };
+        clientService.RoomListChanged -= (rooms) => GetRoomList(rooms);
     }
 
     public List<Room> _rooms = new();
