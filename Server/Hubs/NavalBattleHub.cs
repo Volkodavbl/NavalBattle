@@ -17,19 +17,19 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				Clients.Caller.Error("user is not in room!");
+                await Clients.Caller.Error("user is not in room!");
 				return;
 			}
 
 			user.UserType = newUserType;
 
-			Clients.Group(room.Id.ToString()).ShowRoom(room);
+            await Clients.Group(room.Id.ToString()).ShowRoom(room);
 		}
 
 		//Добавление нового корабля на игровую площадку до начала игры
@@ -38,33 +38,33 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				Clients.Caller.Error("You are not in a room");
+                await Clients.Caller.Error("You are not in a room");
 				return;
 			}
 
 			if (room.Users.Select(x => (x.UserType == UserType.Player)).Count() < 2)
 			{
-				Clients.Caller.Error("Wait for another player to join the room");
+                await Clients.Caller.Error("Wait for another player to join the room");
 				return;
 			}
 
 			var field = user.Field;
 			if (field == null)
 			{
-				Clients.Caller.Error("You don't have a field in this room");
+                await Clients.Caller.Error("You don't have a field in this room");
 				return;
 			}
 			var ship = new Ship(start, end);
 			field.Ships.Add(ship);
 
-			Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room);
 		}
 
 		//Проверка на попадание ко кораблю хода игрока
@@ -73,40 +73,40 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				Clients.Caller.Error("You are not in a room");
+                await Clients.Caller.Error("You are not in a room");
 				return;
 			}
 
 			if (room.Users.Count < 2)
 			{
-				Clients.Caller.Error("Wait for another player to join the room");
+                await Clients.Caller.Error("Wait for another player to join the room");
 				return;
 			}
 
 			var opponent = room.Users.Where(x => x.UserType == UserType.Player).FirstOrDefault(u => u != user);
 			if (opponent == null)
 			{
-				Clients.Caller.Error("Opponent not found");
+                await Clients.Caller.Error("Opponent not found");
 				return;
 			}
 
 			var opponentField = opponent.Field;
 			if (opponentField == null)
 			{
-				Clients.Caller.Error("Opponent's field not found");
+                await Clients.Caller.Error("Opponent's field not found");
 				return;
 			}
 
 			// узнаем, попали ли мы в кораблик или нет
 			var hit = opponentField.Ships.Any(x => x.CheckHit(point));
-			Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room);
 		}
 
 		//Игрок подтверждает готовность для старта игры
@@ -115,20 +115,20 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				Clients.Caller.Error("User are not in a room");
+                await Clients.Caller.Error("User are not in a room");
 				return;
 			}
 
 			await ChangeUserType(UserType.Player);
 
-			Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room);
 		}
 
 		//Создание новой комнаты, пользователь автоматически ---ПРИСОЕДИНЯЕТСЯ--- к созданной комнате
@@ -137,7 +137,7 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
@@ -146,7 +146,7 @@ namespace Server.Hubs
 
 			await JoinRoom(room.Id);
 
-			Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room);
 		}
 
 		//Получение состояния игры на данный момент
@@ -155,18 +155,18 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				Clients.Caller.Error("User are not in a room");
+                await Clients.Caller.Error("User are not in a room");
 				return;
 			}
 
-			Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room);
 		}
 
 		//Получение списка всех комнат
@@ -175,13 +175,13 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var filteredRooms = rooms.ToList();
 
-			Clients.Caller.ShowRoomList(filteredRooms);
+            await Clients.Caller.ShowRoomList(filteredRooms);
 		}
 
 		//присоединение пользователя к комнате, если уже имеется два игрока со статусом Игрок, то пользователь становится наблюдателем
@@ -190,14 +190,14 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				Clients.Caller.Error("Such user doesn't exist!");
+                await Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = rooms.FirstOrDefault(r => r.Id == roomId);
 			if (room == null)
 			{
-				Clients.Caller.Error("User are not in a room");
+                await Clients.Caller.Error("User are not in a room");
 				return;
 			}
 
@@ -213,7 +213,7 @@ namespace Server.Hubs
 			
 			room.Users.Add(user);
 
-			Clients.Caller.ShowRoom(room);
+			await Clients.Caller.ShowRoom(room);
 		}
 
 		//Логин нового юзера
@@ -242,7 +242,7 @@ namespace Server.Hubs
 
 			if(field == null)
 			{
-				Clients.Caller.Error("Field of user doesn't exist!");
+                await Clients.Caller.Error("Field of user doesn't exist!");
 				return;
 			}
 			else
@@ -336,7 +336,7 @@ namespace Server.Hubs
 				}
 			}
 
-			Clients.Caller.ShowRoom(room);
+            await Clients.Caller.ShowRoom(room);
 			return;
 		}
 
