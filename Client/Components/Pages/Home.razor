@@ -18,13 +18,13 @@
 @if (isAuthorized)
 {
     <RoomList></RoomList>
-@*     <EditForm Model="@roomRegister" OnValidSubmit="@CreateRoom">
+    <EditForm Model="@roomRegister" OnValidSubmit="@CreateRoom">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <label for="roomName">Название комнаты: </label>
         <InputText id="roomName" @bind-Value="roomRegister!.RoomName"></InputText>
         <button class="btn btn-primary" type="submit">Создать комнату</button>
-    </EditForm> *@
+    </EditForm>
 }
 
 
@@ -46,12 +46,12 @@
 
     private void CreateRoom()
     {
-        // hubConnection.SendAsync("CreateRoom", new User(roomRegister!.Login!), roomRegister.RoomName);
+        hubConnection.SendAsync("CreateRoom", new User(roomRegister!.Login!), roomRegister.RoomName);
     }
 
     private void Login()
     {
-        // hubConnection.SendAsync("Login", new User(roomRegister!.Login!));
+        hubConnection.SendAsync("Login", roomRegister!.Login!);
         isAuthorized = true;
     }
 }

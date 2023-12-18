@@ -6,6 +6,8 @@
 
 <h3>RoomList</h3>
 <div id="roomList">
+    @if (_rooms.Count() != 0)
+    {
     <table>
         <tr>
             <th>Id</th>
@@ -22,16 +24,19 @@
         }
 
     </table>
+        
+    }
 </div>
 
 @code {
-    // protected override void OnInitialized() => GetRoomList();
+    protected override void OnInitialized() => GetRoomList();
 
     public List<Room> _rooms = new();
+    
 
-    // void GetRoomList()
-    // {
-    //     // hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
-    //     // hubConnection.SendAsync("GetRoomList");
-    // }
+    void GetRoomList()
+    {
+        hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
+        hubConnection.SendAsync("GetRoomList");
+    }
 }
