@@ -1,0 +1,111 @@
+﻿@using Domain.Entities
+<!-- Grid.razor -->
+@inherits ComponentBase
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+
+<div class="grid-container">
+    <h4>Drawing Grid:</h4>
+    <table class="grid">
+        @for (int i = 0; i < 10; i++)
+        {
+            <tr class="grid-row">
+                @for (int j = 0; j < 10; j++)
+                {
+                    var currentPoint = new Point(i, j);
+                    var isShip = Ships.Any(ship => ship.CheckHit(currentPoint));
+                    var isEvent = Events.Contains(currentPoint);
+                    var isSelected = selectedPoint != null && selectedPoint.X == currentPoint.X && selectedPoint.Y == currentPoint.Y;
+
+                    <td class="grid-cell @(isShip ? "ship-cell" : isEvent ? "event-cell" : "") @(isSelected ? "selected-cell" : "")"
+                        @onclick="() => SelectCell(currentPoint)">
+                        <!-- Content for the cell -->
+                        @if (isShip)
+                        {
+                            <div class="ship-symbol">O</div>
+                        }
+                        else if (isEvent)
+                        {
+                            <div class="event-symbol">X</div>
+                        }
+                        else
+                        {
+                           // <div class="ship-symbol">O</div>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+    <button @onclick="Fire">Fire</button>
+</div>
+
+@code {
+    [Parameter]
+    public List<Ship> Ships { get; set; }
+
+    [Parameter]
+    public List<Point> Events { get; set; }
+
+    private Point selectedPoint;
+
+    private void SelectCell(Point point)
+    {
+        selectedPoint = point;
+        StateHasChanged();
+    }
+
+
+
+    private async Task Fire()
+    {
+        if (selectedPoint != null)
+        {
+            // Отправить запрос на сервер с координатами selectedPoint
+            // В данном случае вы можете вызвать метод отправки запроса к вашему серверу
+            // Например, через HttpClient или другой способ в соответствии с вашей инфраструктурой.
+            // Предполагается, что у вас есть метод, который обрабатывает огонь по указанным координатам.
+
+            // Пример с alert, так как у меня нет реального сервера для отправки запроса
+            // Разкомментируйте следующую строку, чтобы использовать настоящий код отправки запроса.
+            // SendFireRequest(selectedPoint);
+
+            // Отправить запрос на сервер с координатами selectedPoint
+            // Пример alert, так как у меня нет реального сервера для отправки запроса
+            // Замените этот код реальным кодом отправки запроса на ваш сервер.
+
+
+
+ 
+            Domain.Entities.Room newRoom;
+
+            var Ship1 = new Ship(new Point(0, 0), new Point(0, 2));
+            var Ship2 = new Ship(new Point(7, 7), new Point(7, 9));
+
+            var testField = new Field();
+            testField.Ships.Add(Ship1);
+            testField.Ships.Add(Ship2);
+
+            var testUser = new User("Player1");
+            testUser.UserType = UserType.Player;
+            testUser.Field = testField;
+
+            newRoom = new Domain.Entities.Room(1, "TestRoom", 10, 2);
+            newRoom.Users.Add(testUser);
+
+            // Обновление данных компонента
+            Ships = newRoom.Users.First().Field.Ships;
+            Events = newRoom.Users.First().Field.Events;
+
+            StateHasChanged();
+
+            //string message = $"Firing at coordinates: ({selectedPoint.X}, {selectedPoint.Y})";
+            //await JsRuntime.InvokeVoidAsync("alert", message); // Alert
+            
+        }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Выберите поле для огня!"); // Alert
+        }
+    }
+}
