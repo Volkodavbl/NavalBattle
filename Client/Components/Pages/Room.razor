@@ -1,13 +1,13 @@
-﻿@page "/battleship"
+﻿@page "/room"
 @using Domain.Entities
 @using Microsoft.AspNetCore.SignalR.Client
 @inject HubConnection hubConnection
 <h3>Room</h3>
 
-@* <Grid Ships="@testRoom.Users.First().Field.Ships" Events="@testRoom.Users.First().Field.Events"/> *@
-<Grid Ships="@MainUser.Field.Ships" Events="@MainUser.Field.Events"/>
+<Grid Ships="@testRoom.Users.First().Field.Ships" Events="@testRoom.Users.First().Field.Events"/>
+@* <Grid Ships="@MainUser.Field.Ships" Events="@MainUser.Field.Events"/>
 <Grid Ships="@OpponentUser.Field.Ships"
-      Events="@OpponentUser.Field.Events" />
+      Events="@OpponentUser.Field.Events" /> *@
 
 
 @code {
@@ -20,12 +20,12 @@
 
     protected override void OnInitialized()
     {
-        hubConnection.On<Domain.Entities.Room, User>("ShowRoom", (room, user) => 
-        { 
-            MainRoom = room; 
-            MainUser = user;
-            OpponentUser = MainRoom.Users.FirstOrDefault(u => u.Login != MainUser.Login && u.UserType == UserType.Player);
-        });
+        // hubConnection.On<Domain.Entities.Room, User>("ShowRoom", (room, user) => 
+        // { 
+        //     MainRoom = room; 
+        //     MainUser = user;
+        //     OpponentUser = MainRoom.Users.FirstOrDefault(u => u.Login != MainUser.Login && u.UserType == UserType.Player);
+        // });
 
         // Создаем тестовые данные
         var Ship1 = new Ship(new Point(0, 0), new Point(0, 2));

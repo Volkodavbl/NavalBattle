@@ -68,26 +68,26 @@
         {
             await hubConnection.SendAsync("CheckHit", selectedPoint);
 
-            // Domain.Entities.Room newRoom;
+            Domain.Entities.Room newRoom;
 
-            // var Ship1 = new Ship(new Point(0, 0), new Point(0, 2));
-            // var Ship2 = new Ship(new Point(7, 7), new Point(7, 9));
+            var Ship1 = new Ship(new Point(0, 0), new Point(0, 2));
+            var Ship2 = new Ship(new Point(7, 7), new Point(7, 9));
 
-            // var testField = new Field();
-            // testField.Ships.Add(Ship1);
-            // testField.Ships.Add(Ship2);
+            var testField = new Field();
+            testField.Ships.Add(Ship1);
+            testField.Ships.Add(Ship2);
 
-            // var testUser = new User("Player1");
-            // testUser.UserType = UserType.Player;
-            // testUser.Field = testField;
+            var testUser = new User("Player1");
+            testUser.UserType = UserType.Player;
+            testUser.Field = testField;
 
-            // newRoom = new Domain.Entities.Room(1, "TestRoom", 10, 2);
-            // newRoom.Users.Add(testUser);
+            newRoom = new Domain.Entities.Room(1, "TestRoom", 10, 2);
+            newRoom.Users.Add(testUser);
 
-            // // Обновление данных компонента
-            // Events = newRoom.Users.First().Field.Events;
+            // Обновление данных компонента
+            Events = newRoom.Users.First().Field.Events;
 
-            // StateHasChanged()
+            StateHasChanged();
         }
         else
         {
