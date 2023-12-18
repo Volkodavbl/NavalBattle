@@ -51,7 +51,7 @@
 
     private void Login()
     {
-        hubConnection.SendAsync("Login", new User(roomRegister!.Login!));
+        hubConnection.SendAsync("Login", roomRegister!.Login!);
         isAuthorized = true;
     }
 }
