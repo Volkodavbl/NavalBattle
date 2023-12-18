@@ -17,7 +17,8 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				var room = GetRoomByUser(user);
+				await Clients.Caller.ShowRoom();
 				return;
 			}
 
@@ -236,14 +237,14 @@ namespace Server.Hubs
 			var notUnique = users.Any(x => x.Login == login);
 			if (notUnique)
 			{
-				await Clients.Caller.SendAsync("notUniqueLogin", notUnique);
+				await Clients.Caller.Error("Not unique nickname!");
 				return;
 			}
 			var user = new User(login);
 			users.Add(user);
 			connectionId_user.Add(Context.ConnectionId, user);
 
-			await Clients.Caller.SendAsync("ShowRoomList", notUnique);
+			Clients.Caller.ShowRoomList(rooms);
 		}
 
 		//Случайная расстановка всех кораблей. Учитывает, что игрок поместил уже какие-то корабли на поле, стирает их, ставит все корабли заново
