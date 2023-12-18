@@ -8,8 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-var app = builder.Build();
-
 HubConnection connection = new HubConnectionBuilder()
     .WithUrl(new Uri("https://127.0.0.1:7155/NavalBattle"), (opts) =>
     {
@@ -24,6 +22,12 @@ HubConnection connection = new HubConnectionBuilder()
     })
     .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10)])
     .Build();
+
+
+builder.Services.AddSingleton<HubConnection>(connection);
+var app = builder.Build();
+
+
 
 await connection.StartAsync();
 

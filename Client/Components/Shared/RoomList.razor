@@ -1,0 +1,37 @@
+﻿@using Domain.Entities
+@using Services
+@using Microsoft.AspNetCore.SignalR.Client
+@inject ClientService clientService;
+@inject HubConnection hubConnection;
+
+<h3>RoomList</h3>
+<div id="roomList">
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Имя</th>
+            <th>Количество участников</th>
+        </tr>
+        @foreach (var room in _rooms)
+        {
+            <tr>
+                <td>@room.Id</td>
+                <td>@room.Name</td>
+                <td>@room.Users.Count</td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+@code {
+    // protected override void OnInitialized() => GetRoomList();
+
+    public List<Room> _rooms = new();
+
+    // void GetRoomList()
+    // {
+    //     // hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
+    //     // hubConnection.SendAsync("GetRoomList");
+    // }
+}
