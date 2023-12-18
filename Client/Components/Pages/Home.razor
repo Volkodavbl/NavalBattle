@@ -49,7 +49,7 @@
         isAuthorized = false;
         await InvokeAsync(StateHasChanged);
         clientService.ErrorOcured -= ErrorMethod;
-        // await JsRuntime.InvokeVoidAsync("alert", message);
+        await JsRuntime.InvokeVoidAsync("alert", message);
     }
 
     protected override void OnInitialized()
