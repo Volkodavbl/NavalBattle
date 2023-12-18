@@ -48,6 +48,14 @@
     color: white;
 }
 
+.damage-symbol{
+    color: crimson;
+}
+
+.miss-symbol{  
+    color: slategrey;
+}
+
 .selected-cell {
     background-color: red;
 }
