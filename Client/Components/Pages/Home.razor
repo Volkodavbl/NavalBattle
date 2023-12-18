@@ -46,13 +46,13 @@
     [SupplyParameterFromForm]
     public RoomRegister? roomRegister { get; set; }
 
-    private void ErrorMethod(string message)
+    private async void ErrorMethod(string message)
     {
         isAuthorized = false;
         Console.WriteLine("ERRRORRRRRRRRRRRRRRRRRRRRR" + message);
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
         clientService.ErrorOcured -= ErrorMethod;
-        // await JsRuntime.InvokeVoidAsync("alert", message);
+        await JsRuntime.InvokeVoidAsync("alert", message);
     }
 
     protected override void OnInitialized()
