@@ -7,19 +7,23 @@ namespace Client.Services
 {
     public class ClientService : IClientContract
     {
+
+        public event Action<List<Room>> RoomListChanged;
+        public event Action<Room> RoomChanged;
+        public event Action<string> ErrorOcured;
         public void Error(string message)
         {
-            throw new NotImplementedException();
+            ErrorOcured.Invoke(message);
         }
 
         public void ShowRoom(Room room)
         {
-            throw new NotImplementedException();
+            RoomChanged.Invoke(room);
         }
 
         public void ShowRoomList(List<Room> rooms)
         {
-            throw new NotImplementedException();
+            RoomListChanged.Invoke(rooms);
         }
     }
 }

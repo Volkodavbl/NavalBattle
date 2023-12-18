@@ -1,5 +1,6 @@
 ﻿@using Domain.Entities
 @using Services
+@implements IDisposable
 @using Microsoft.AspNetCore.SignalR.Client
 @inject ClientService clientService;
 @inject HubConnection hubConnection;
@@ -8,31 +9,40 @@
 <div id="roomList">
     @if (_rooms.Count() != 0)
     {
-    <table>
-        <tr>
-            <th>Id</th>
-            <th>Имя</th>
-            <th>Количество участников</th>
-        </tr>
-        @foreach (var room in _rooms)
-        {
+        <table>
             <tr>
-                <td>@room.Id</td>
-                <td>@room.Name</td>
-                <td>@room.Users.Count</td>
+                <th>Id</th>
+                <th>Имя</th>
+                <th>Количество участников</th>
             </tr>
-        }
+            @foreach (var room in _rooms)
+            {
+                <tr>
+                    <td>@room.Id</td>
+                    <td>@room.Name</td>
+                    <td>@room.Users.Count</td>
+                </tr>
+            }
 
-    </table>
-        
+        </table>
+
     }
 </div>
 
 @code {
-    protected override void OnInitialized() => GetRoomList();
+    protected override void OnInitialized()
+    {
+        clientService.RoomListChanged += (rooms) => { _rooms = rooms; StateHasChanged(); };
+        GetRoomList();
+    }
+
+    public void Dispose()
+    {
+        clientService.RoomListChanged += (rooms) => { _rooms = rooms; StateHasChanged(); };
+    }
 
     public List<Room> _rooms = new();
-    
+
 
     void GetRoomList()
     {

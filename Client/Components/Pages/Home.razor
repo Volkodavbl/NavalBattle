@@ -46,7 +46,7 @@
 
     private void CreateRoom()
     {
-        hubConnection.SendAsync("CreateRoom", new User(roomRegister!.Login!), roomRegister.RoomName);
+        hubConnection.SendAsync("CreateRoom", roomRegister!.RoomName);
     }
 
     private void Login()
