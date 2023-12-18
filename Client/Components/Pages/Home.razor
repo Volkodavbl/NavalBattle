@@ -49,7 +49,6 @@
     private async void ErrorMethod(string message)
     {
         isAuthorized = false;
-        Console.WriteLine("ERRRORRRRRRRRRRRRRRRRRRRRR" + message);
         await InvokeAsync(StateHasChanged);
         clientService.ErrorOcured -= ErrorMethod;
         await JsRuntime.InvokeVoidAsync("alert", message);
@@ -75,8 +74,7 @@
     }
 
     private void CreateRoom()
-    {
-        hubConnection.On<Domain.Entities.Room, User>("ShowRoom", clientService.ShowRoom);
+    {        
         hubConnection.SendAsync("CreateRoom", roomRegister!.RoomName);
         Navigation.NavigateTo("/room");
     }
@@ -84,8 +82,6 @@
     private void Login()
     {
         isAuthorized = true;
-        
-        Console.WriteLine("LOGIIIIIIIIIIIIIIIIIIIIIN");
         hubConnection.SendAsync("LoginUser", roomRegister!.Login!);
     }
 

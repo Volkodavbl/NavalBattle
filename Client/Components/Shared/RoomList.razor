@@ -30,10 +30,14 @@
 </div>
 
 @code {
-    protected override async void OnInitialized()
+
+    protected override void OnAfterRender(bool firstRender)
     {
-        clientService.RoomListChanged += (rooms) => { _rooms = rooms; InvokeAsync(StateHasChanged); };
-        GetRoomList();
+        if (firstRender)
+        {
+            clientService.RoomListChanged += (rooms) => { _rooms = rooms; InvokeAsync(StateHasChanged); };
+            hubConnection.On<Domain.Entities.Room, User>("ShowRoom", clientService.ShowRoom);
+        }
     }
 
     public void Dispose()
@@ -42,11 +46,4 @@
     }
 
     public List<Room> _rooms = new();
-
-
-    void GetRoomList()
-    {
-        // hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
-        // hubConnection.SendAsync("GetRoomList");
-    }
 }
