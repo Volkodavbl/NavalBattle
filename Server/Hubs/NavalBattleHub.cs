@@ -17,21 +17,19 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				var room = GetRoomByUser(user);
-				await Clients.Caller.ShowRoom();
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
-
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You are not in a room");
+				Clients.Caller.Error("user is not in room!");
 				return;
 			}
 
 			user.UserType = newUserType;
 
-			await Clients.Group(room.Id.ToString()).SendAsync("UserTypeChanged", user);
+			Clients.Group(room.Id.ToString()).ShowRoom(room);
 		}
 
 		//Добавление нового корабля на игровую площадку до начала игры
@@ -40,33 +38,33 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You are not in a room");
+				Clients.Caller.Error("You are not in a room");
 				return;
 			}
 
 			if (room.Users.Select(x => (x.UserType == UserType.Player)).Count() < 2)
 			{
-				await Clients.Caller.SendAsync("Error", "Wait for another player to join the room");
+				Clients.Caller.Error("Wait for another player to join the room");
 				return;
 			}
 
 			var field = user.Field;
 			if (field == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You don't have a field in this room");
+				Clients.Caller.Error("You don't have a field in this room");
 				return;
 			}
 			var ship = new Ship(start, end);
 			field.Ships.Add(ship);
-			
-			await Clients.Group(room.Id.ToString()).SendAsync("ShipAdded", ship);
+
+			Clients.Caller.ShowRoom(room);
 		}
 
 		//Проверка на попадание ко кораблю хода игрока
@@ -75,50 +73,40 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You are not in a room");
+				Clients.Caller.Error("You are not in a room");
 				return;
 			}
 
 			if (room.Users.Count < 2)
 			{
-				await Clients.Caller.SendAsync("Error", "Wait for another player to join the room");
+				Clients.Caller.Error("Wait for another player to join the room");
 				return;
 			}
 
 			var opponent = room.Users.Where(x => x.UserType == UserType.Player).FirstOrDefault(u => u != user);
 			if (opponent == null)
 			{
-				await Clients.Caller.SendAsync("Error", "Opponent not found");
+				Clients.Caller.Error("Opponent not found");
 				return;
 			}
 
 			var opponentField = opponent.Field;
 			if (opponentField == null)
 			{
-				await Clients.Caller.SendAsync("Error", "Opponent's field not found");
+				Clients.Caller.Error("Opponent's field not found");
 				return;
 			}
 
 			// узнаем, попали ли мы в кораблик или нет
 			var hit = opponentField.Ships.Any(x => x.CheckHit(point));
-			if (hit)
-			{
-				await Clients.Caller.SendAsync("Hit", hit);
-				return;
-			}
-			else
-			{
-				await Clients.Caller.SendAsync("Miss", hit);
-				return;
-			}
-
+			Clients.Caller.ShowRoom(room);
 		}
 
 		//Игрок подтверждает готовность для старта игры
@@ -127,29 +115,29 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You are not in a room");
+				Clients.Caller.Error("User are not in a room");
 				return;
 			}
 
 			await ChangeUserType(UserType.Player);
 
-			await Clients.Group(room.Id.ToString()).SendAsync("PlayerReady", user);
+			Clients.Caller.ShowRoom(room);
 		}
 
 		//Создание новой комнаты, пользователь автоматически ---ПРИСОЕДИНЯЕТСЯ--- к созданной комнате
-		public async Task CreateRoom(string roomName, int fieldSize, int shipCount)
+		public async Task CreateRoom(string roomName, int fieldSize = 10, int shipCount = 10)
 		{
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
@@ -158,7 +146,7 @@ namespace Server.Hubs
 
 			await JoinRoom(room.Id);
 
-			await Clients.Caller.SendAsync("RoomCreated", room);
+			Clients.Caller.ShowRoom(room);
 		}
 
 		//Получение состояния игры на данный момент
@@ -167,18 +155,18 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = GetRoomByUser(user);
 			if (room == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You are not in a room");
+				Clients.Caller.Error("User are not in a room");
 				return;
 			}
 
-			await Clients.Caller.SendAsync("GameState", room);
+			Clients.Caller.ShowRoom(room);
 		}
 
 		//Получение списка всех комнат
@@ -187,13 +175,13 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var filteredRooms = rooms.ToList();
 
-			await Clients.Caller.SendAsync("RoomList", filteredRooms);
+			Clients.Caller.ShowRoomList(filteredRooms);
 		}
 
 		//присоединение пользователя к комнате, если уже имеется два игрока со статусом Игрок, то пользователь становится наблюдателем
@@ -202,33 +190,30 @@ namespace Server.Hubs
 			var user = GetUserByConnectionId(Context.ConnectionId);
 			if (user == null)
 			{
-				await Clients.Caller.SendAsync("Error", "You must log in first");
+				Clients.Caller.Error("Such user doesn't exist!");
 				return;
 			}
 
 			var room = rooms.FirstOrDefault(r => r.Id == roomId);
 			if (room == null)
 			{
-				await Clients.Caller.SendAsync("Error", "Room not found");
+				Clients.Caller.Error("User are not in a room");
 				return;
 			}
 
 			if (room.Users.Select(x => (x.UserType == UserType.Player)).Count() == 2)
 			{
 				await ChangeUserType(UserType.Observer);
-				await Clients.Caller.SendAsync("Error", "Room is already full");
 			}
 			else
 			{
 				await ChangeUserType(UserType.Player);
 				user.Field = new();
-				await Clients.Caller.SendAsync("Good", "You are a player");
 			}
 			
 			room.Users.Add(user);
 
-			await Clients.Caller.SendAsync("JoinedRoom", room);
-			await Clients.Group(roomId.ToString()).SendAsync("UserJoined", user);
+			Clients.Caller.ShowRoom(room);
 		}
 
 		//Логин нового юзера
@@ -237,7 +222,7 @@ namespace Server.Hubs
 			var notUnique = users.Any(x => x.Login == login);
 			if (notUnique)
 			{
-				await Clients.Caller.Error("Not unique nickname!");
+				Clients.Caller.Error("Not unique nickname!");
 				return;
 			}
 			var user = new User(login);
@@ -250,11 +235,13 @@ namespace Server.Hubs
 		//Случайная расстановка всех кораблей. Учитывает, что игрок поместил уже какие-то корабли на поле, стирает их, ставит все корабли заново
 		public async Task RandomShipPlacement()
 		{
-			var field = GetUserByConnectionId(Context.ConnectionId).Field;
+			var user = GetUserByConnectionId(Context.ConnectionId);
+			var field = user.Field;
+			var room = GetRoomByUser(user);
 
 			if(field == null)
 			{
-				await Clients.Caller.SendAsync("Error", field);
+				Clients.Caller.Error("Field of user doesn't exist!");
 				return;
 			}
 			else
@@ -348,7 +335,7 @@ namespace Server.Hubs
 				}
 			}
 
-			await Clients.Caller.SendAsync("RandomShipPlacementApplied", field);
+			Clients.Caller.ShowRoom(room);
 			return;
 		}
 
