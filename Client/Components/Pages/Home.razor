@@ -1,10 +1,15 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
 @using Domain.Entities
+@using Services
 @using Client.Components.Shared
 @rendermode InteractiveServer
+@implements IDisposable
 
 @page "/"
 @inject HubConnection hubConnection;
+@inject ClientService clientService;
+@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime
 
 <PageTitle>NavalBattle</PageTitle>
 
@@ -42,16 +47,38 @@
     [SupplyParameterFromForm]
     public RoomRegister? roomRegister { get; set; }
 
-    protected override void OnInitialized() => roomRegister ??= new();
+    private void ErrorMethod(string message)
+    {
+        isAuthorized = false;
+        Console.WriteLine("ERRRORRRRRRRRRRRRRRRRRRRRR" + message);
+        InvokeAsync(StateHasChanged);
+        // await JsRuntime.InvokeVoidAsync("alert", message);
+    }
+
+    protected override void OnInitialized()
+    {
+        clientService.ErrorOcured += (message) => ErrorMethod(message);
+        roomRegister ??= new();
+    }
+
+    public void Dispose()
+    {
+        clientService.ErrorOcured -= ErrorMethod;
+    }
 
     private void CreateRoom()
     {
+        hubConnection.On<Domain.Entities.Room>("ShowRoom", clientService.ShowRoom);
         hubConnection.SendAsync("CreateRoom", roomRegister!.RoomName);
+        Navigation.NavigateTo("/room");
     }
 
     private void Login()
     {
-        hubConnection.SendAsync("Login", roomRegister!.Login!);
         isAuthorized = true;
+        hubConnection.On<string>("Error", clientService.Error);
+        Console.WriteLine("LOGIIIIIIIIIIIIIIIIIIIIIN");
+        hubConnection.SendAsync("LoginUser", roomRegister!.Login!);
     }
+
 }

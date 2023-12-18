@@ -30,15 +30,15 @@
 </div>
 
 @code {
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
-        clientService.RoomListChanged += (rooms) => { _rooms = rooms; StateHasChanged(); };
+        clientService.RoomListChanged += (rooms) => { _rooms = rooms; InvokeAsync(StateHasChanged); };
         GetRoomList();
     }
 
     public void Dispose()
     {
-        clientService.RoomListChanged += (rooms) => { _rooms = rooms; StateHasChanged(); };
+        clientService.RoomListChanged += (rooms) => { _rooms = rooms; InvokeAsync(StateHasChanged); };
     }
 
     public List<Room> _rooms = new();
@@ -46,7 +46,7 @@
 
     void GetRoomList()
     {
-        hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
-        hubConnection.SendAsync("GetRoomList");
+        // hubConnection.On<List<Room>>("ShowRoomList", clientService.ShowRoomList);
+        // hubConnection.SendAsync("GetRoomList");
     }
 }

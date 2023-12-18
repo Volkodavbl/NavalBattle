@@ -11,19 +11,24 @@ namespace Client.Services
         public event Action<List<Room>> RoomListChanged;
         public event Action<Room> RoomChanged;
         public event Action<string> ErrorOcured;
-        public void Error(string message)
+        public Task Error(string message)
         {
             ErrorOcured.Invoke(message);
+            return Task.CompletedTask;
         }
 
-        public void ShowRoom(Room room)
+        public Task ShowRoom(Room room)
         {
             RoomChanged.Invoke(room);
+            return Task.CompletedTask;
+
         }
 
-        public void ShowRoomList(List<Room> rooms)
+        public Task ShowRoomList(List<Room> rooms)
         {
             RoomListChanged.Invoke(rooms);
+            return Task.CompletedTask;
+
         }
     }
 }

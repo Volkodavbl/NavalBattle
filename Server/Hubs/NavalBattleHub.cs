@@ -222,14 +222,15 @@ namespace Server.Hubs
 			var notUnique = users.Any(x => x.Login == login);
 			if (notUnique)
 			{
-				Clients.Caller.Error("Not unique nickname!");
+				Console.WriteLine("Server error");
+				await Clients.Caller.Error("Not unique nickname!");
 				return;
 			}
 			var user = new User(login);
 			users.Add(user);
 			connectionId_user.Add(Context.ConnectionId, user);
 
-			Clients.Caller.ShowRoomList(rooms);
+			await Clients.Caller.ShowRoomList(rooms);
 		}
 
 		//Случайная расстановка всех кораблей. Учитывает, что игрок поместил уже какие-то корабли на поле, стирает их, ставит все корабли заново
