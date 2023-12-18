@@ -2,14 +2,13 @@
 @using Domain.Entities
 @using Services
 @using Client.Components.Shared
-@rendermode InteractiveServer
-@implements IDisposable
-
 @page "/"
 @inject HubConnection hubConnection;
 @inject ClientService clientService;
 @inject NavigationManager Navigation
 @inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+@implements IDisposable
 
 <PageTitle>NavalBattle</PageTitle>
 
@@ -52,13 +51,23 @@
         isAuthorized = false;
         Console.WriteLine("ERRRORRRRRRRRRRRRRRRRRRRRR" + message);
         InvokeAsync(StateHasChanged);
+        clientService.ErrorOcured -= ErrorMethod;
         // await JsRuntime.InvokeVoidAsync("alert", message);
     }
 
     protected override void OnInitialized()
     {
+        hubConnection.On<string>("Error", clientService.Error);
         clientService.ErrorOcured += (message) => ErrorMethod(message);
         roomRegister ??= new();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
     }
 
     public void Dispose()
@@ -76,7 +85,7 @@
     private void Login()
     {
         isAuthorized = true;
-        hubConnection.On<string>("Error", clientService.Error);
+        
         Console.WriteLine("LOGIIIIIIIIIIIIIIIIIIIIIN");
         hubConnection.SendAsync("LoginUser", roomRegister!.Login!);
     }
