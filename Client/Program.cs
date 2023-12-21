@@ -11,8 +11,10 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 
+var ServerUrl = new Uri(builder.Configuration.GetSection("Uri").Get<Uri>()! + "NavalBattle");
+
 HubConnection connection = new HubConnectionBuilder()
-    .WithUrl(new Uri(builder.Configuration.GetSection("Uri") + "/NavalBattle"), (opts) =>
+    .WithUrl(ServerUrl, (opts) =>
     {
         opts.HttpMessageHandlerFactory = (message) =>
         {
